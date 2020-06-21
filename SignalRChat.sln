@@ -9,7 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SignalRChat.Clients", "Sign
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalRChat.Clients.Console", "SignalRChat.Clients.Console\SignalRChat.Clients.Console.csproj", "{8FAF3330-1F2C-40D0-9DB5-C9123735F5C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRChat.Shared", "SignalRChat.Shared\SignalRChat.Shared.csproj", "{E376E787-3A00-4CE7-9A00-843C96AC8256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalRChat.Shared", "SignalRChat.Shared\SignalRChat.Shared.csproj", "{E376E787-3A00-4CE7-9A00-843C96AC8256}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRChat.Clients.Blazor", "SignalRChat.Clients.Blazor\SignalRChat.Clients.Blazor.csproj", "{40A19108-71C2-4A96-AAE0-5CD03D139018}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,12 +31,17 @@ Global
 		{E376E787-3A00-4CE7-9A00-843C96AC8256}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E376E787-3A00-4CE7-9A00-843C96AC8256}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E376E787-3A00-4CE7-9A00-843C96AC8256}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40A19108-71C2-4A96-AAE0-5CD03D139018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A19108-71C2-4A96-AAE0-5CD03D139018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A19108-71C2-4A96-AAE0-5CD03D139018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A19108-71C2-4A96-AAE0-5CD03D139018}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8FAF3330-1F2C-40D0-9DB5-C9123735F5C7} = {0838B5EA-7D0E-4004-B0A3-5B46552835F0}
+		{40A19108-71C2-4A96-AAE0-5CD03D139018} = {0838B5EA-7D0E-4004-B0A3-5B46552835F0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69C3AC05-97F1-404E-BAC3-B9A49B331563}
