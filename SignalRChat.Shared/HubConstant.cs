@@ -5,6 +5,6 @@
 		public const string HubPattern = "/chat";
 		public const string SendMessageMethod = "SendMessage";
 		public const string ReceiveMessageMethod = "ReceiveMessage";
-		public const string RegisterMethod = "Register";
+		public const string NotifyStateMethod = "NotifyState";
 	}
 }
