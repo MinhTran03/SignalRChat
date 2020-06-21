@@ -14,16 +14,18 @@ namespace SignalRChat.Clients.Console
 
             var chatClient = new ChatClient(username, "http://localhost:5000");
             chatClient.MessageReceived += ChatClient_MessageReceived;
-            chatClient.NewClientNotification += ChatClient_NewClientNotification;
+            chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
             await chatClient.StartAsync();
 
             System.Console.WriteLine("Connect success. Start to chat\nTo exit press \'exit\'");
             string message = string.Empty;
             do
             {
+               System.Console.Write("[You]: ");
                message = System.Console.ReadLine();
-               await chatClient.SendAsync(message);
+               if(message != "exit") await chatClient.SendAsync(message);
             } while (message != "exit");
+            await chatClient.StopAsync();
          }
          catch (System.Exception e)
          {
@@ -31,14 +33,29 @@ namespace SignalRChat.Clients.Console
          }
       }
 
-      private static void ChatClient_NewClientNotification(object sender, string e)
+      private static void ChatClient_NotificationStateChange(object sender, NotifyStateEventArgs e)
       {
-         System.Console.WriteLine("[{0}] joined the chat", e);
+         ClearCurrentConsoleLine();
+         if(e.State == State.Register)
+            System.Console.WriteLine("[{0}] has join the chat", e.Username);
+         else
+            System.Console.WriteLine("[{0}] disconnected", e.Username);
+         System.Console.Write("[You]: ");
       }
 
       private static void ChatClient_MessageReceived(object sender, MessageReceivedEventArgs e)
       {
+         ClearCurrentConsoleLine();
          System.Console.WriteLine("[{0}]: {1}", e.UserName, e.Message);
+         System.Console.Write("[You]: ");
+      }
+
+      public static void ClearCurrentConsoleLine()
+      {
+         int currentLineCursor = System.Console.CursorTop;
+         System.Console.SetCursorPosition(0, System.Console.CursorTop);
+         System.Console.Write(new string(' ', System.Console.WindowWidth));
+         System.Console.SetCursorPosition(0, currentLineCursor);
       }
    }
 }
