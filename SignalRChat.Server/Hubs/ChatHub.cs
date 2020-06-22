@@ -29,8 +29,6 @@ namespace SignalRChat.Server.Hubs
 
       public override async Task OnDisconnectedAsync(Exception e)
       {
-         Console.WriteLine($"Disconnected {e?.Message} {Context.ConnectionId}");
-         // try to get connection
          string id = Context.ConnectionId;
          if (!userLookup.TryGetValue(id, out string username))
             username = "[unknown]";
