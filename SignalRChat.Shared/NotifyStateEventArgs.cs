@@ -9,6 +9,6 @@
 	public class NotifyStateEventArgs
 	{
 		public State State { get; set; }
-		public string Username { get; set; }
+		public ClientIdentity ClientIdentity { get; set; }
 	}
 }

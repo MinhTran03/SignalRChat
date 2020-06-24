@@ -7,7 +7,7 @@ namespace SignalRChat.Shared
 	public class ChatClient : IAsyncDisposable
 	{
 		private HubConnection _hubConnection;
-		private readonly string _username;
+		private readonly ClientIdentity _clientIdentity;
 		private readonly string _hubUrl;
 		private bool _isStarted;
 		public event EventHandler<MessageReceivedEventArgs> MessageReceived;
@@ -20,7 +20,7 @@ namespace SignalRChat.Shared
 			if (string.IsNullOrWhiteSpace(siteUrl))
 				throw new ArgumentNullException(nameof(siteUrl));
 
-			_username = username;
+			_clientIdentity = new ClientIdentity() { Username = username };
 			_hubUrl = siteUrl.TrimEnd('/') + HubConstant.HubPattern;
 		}
 
@@ -32,32 +32,33 @@ namespace SignalRChat.Shared
 					.WithUrl(_hubUrl)
 					.Build();
 
-				_hubConnection.On<string, string>(HubConstant.ReceiveMessageMethod,
-					(clientUsername, message) => HandlerReceiveMessage(clientUsername, message));
-				_hubConnection.On<string, State>(HubConstant.NotifyStateMethod,
-					(clientUsername, state) => HandlerNotifyOtherClientStateChange(clientUsername, state));
+				_hubConnection.On<ClientIdentity, string>(HubConstant.ReceiveMessageMethod,
+					(clientIdentity, message) => HandlerReceiveMessage(clientIdentity, message));
+				_hubConnection.On<ClientIdentity, State>(HubConstant.NotifyStateMethod,
+					(clientIdentity, state) => HandlerNotifyOtherClientStateChange(clientIdentity, state));
 
 				await _hubConnection.StartAsync();
+				_clientIdentity.ClientId = _hubConnection.ConnectionId;
 				_isStarted = true;
 
-				await _hubConnection.SendAsync(HubConstant.NotifyStateMethod, _username);
+				await _hubConnection.SendAsync(HubConstant.NotifyStateMethod, _clientIdentity);
 			}
 		}
 
-		private void HandlerReceiveMessage(string clientUsername, string message)
+		private void HandlerReceiveMessage(ClientIdentity clientIdentity, string message)
 		{
 			MessageReceived?.Invoke(this, new MessageReceivedEventArgs
 			{
-				UserName = clientUsername,
+				ClientIdentity = clientIdentity,
 				Message = message
 			});
 		}
 
-		private void HandlerNotifyOtherClientStateChange(string clientUsername, State state)
+		private void HandlerNotifyOtherClientStateChange(ClientIdentity clientIdentity, State state)
 		{
 			NotificationStateChange?.Invoke(this, new NotifyStateEventArgs
 			{
-				Username = clientUsername,
+				ClientIdentity = clientIdentity,
 				State = state
 			});
 		}
@@ -66,7 +67,7 @@ namespace SignalRChat.Shared
 		{
 			if (_isStarted == false)
 				throw new InvalidOperationException("Client not started");
-			await _hubConnection.SendAsync(HubConstant.SendMessageMethod, _username, message);
+			await _hubConnection.SendAsync(HubConstant.SendMessageMethod, _clientIdentity, message);
 		}
 
 		public async Task StopAsync()
