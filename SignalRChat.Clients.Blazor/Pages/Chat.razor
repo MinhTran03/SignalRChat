@@ -2,13 +2,15 @@
 @inherits ChatBase
 
 <h1>Welcome to your chat app using SignalR.</h1>
+<DxTextBox @bind-Text="@username" SizeMode="SizeMode.Medium" NullText="Enter your name" />
+<button @onclick="async () => await RegisUser()" class="btn btn-success">Regis</button>
 
 @if (chatMessages != null)
 {
 	<ul>
 		@foreach (var chatMessage in chatMessages)
 		{
-			<li>@chatMessage.UserName: @chatMessage.Message</li>
+			<li>@chatMessage.ClientIdentity.Username: @chatMessage.Message</li>
 		}
 	</ul>
 }
@@ -16,4 +18,4 @@
 <DxTextBox @bind-Text="@myChatMessage" SizeMode="SizeMode.Medium" NullText="Your Message" />
 <DxButton Text="Send" RenderStyle="ButtonRenderStyle.Success"
 			 RenderStyleMode="ButtonRenderStyleMode.Contained"
-			 Click="@(async (args) => await HandleSendMessage(args))"/>
+			 Click="@(async (args) => await HandleSendMessage(args))" />
