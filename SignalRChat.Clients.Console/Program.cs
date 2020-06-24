@@ -37,16 +37,16 @@ namespace SignalRChat.Clients.Console
       {
          ClearCurrentConsoleLine();
          if(e.State == State.Register)
-            System.Console.WriteLine("[{0}] has join the chat", e.Username);
+            System.Console.WriteLine("[{0}] has join the chat", e.ClientIdentity.Username);
          else
-            System.Console.WriteLine("[{0}] disconnected", e.Username);
+            System.Console.WriteLine("[{0}] disconnected", e.ClientIdentity.Username);
          System.Console.Write("[You]: ");
       }
 
       private static void ChatClient_MessageReceived(object sender, MessageReceivedEventArgs e)
       {
          ClearCurrentConsoleLine();
-         System.Console.WriteLine("[{0}]: {1}", e.UserName, e.Message);
+         System.Console.WriteLine("[{0}]: {1}", e.ClientIdentity.Username, e.Message);
          System.Console.Write("[You]: ");
       }
 
