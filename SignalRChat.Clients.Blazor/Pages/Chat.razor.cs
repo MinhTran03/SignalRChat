@@ -39,7 +39,7 @@ namespace SignalRChat.Clients.Blazor.Pages
 		protected async Task RegisUser()
 		{
 			chatMessages = new List<MessageReceivedEventArgs>();
-			chatClient = new ChatClient($"{username}", "http://localhost:5000");
+			chatClient = new ChatClient($"{username}", HubConstant.HubUrl);
 			chatClient.MessageReceived += ChatClient_MessageReceived;
 			chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
 			await chatClient.StartAsync();

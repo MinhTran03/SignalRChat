@@ -12,7 +12,7 @@ namespace SignalRChat.Clients.Console
             System.Console.Write("Enter your name: ");
             var username = System.Console.ReadLine();
 
-            var chatClient = new ChatClient(username, "http://localhost:5000");
+            var chatClient = new ChatClient(username, HubConstant.HubUrl);
             chatClient.MessageReceived += ChatClient_MessageReceived;
             chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
             await chatClient.StartAsync();
