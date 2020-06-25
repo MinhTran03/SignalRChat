@@ -10,8 +10,17 @@ namespace SignalRChat.Clients.Blazor.Pages
 	{
 		protected ChatClient chatClient;
 		protected List<MessageReceivedEventArgs> chatMessages;
+		protected List<ClientIdentity> ClientList;
 		protected string myChatMessage = string.Empty;
 		protected string username = string.Empty;
+		private delegate Task SendMessageDelegate(string clientId);
+		private SendMessageDelegate sendMessageDelegate;
+
+		protected override void OnInitialized()
+		{
+			ClientList = new List<ClientIdentity>();
+			sendMessageDelegate = Send;
+		}
 
 		private void ChatClient_NotificationStateChange(object sender, NotifyStateEventArgs e)
 		{
@@ -20,6 +29,14 @@ namespace SignalRChat.Clients.Blazor.Pages
 				ClientIdentity = e.ClientIdentity,
 				Message = e.State.ToString()
 			});
+			if(e.State == State.Register)
+			{
+				ClientList.Add(e.ClientIdentity);
+			}
+			else
+			{
+				ClientList.RemoveAll(c => c.ClientId == e.ClientIdentity.ClientId);
+			}
 			StateHasChanged();
 		}
 
@@ -29,9 +46,9 @@ namespace SignalRChat.Clients.Blazor.Pages
 			StateHasChanged();
 		}
 
-		protected async Task HandleSendMessage(MouseEventArgs args)
+		protected async Task HandleSendMessage()
 		{
-			await chatClient.SendAsync(myChatMessage);
+			await sendMessageDelegate(null);
 			myChatMessage = string.Empty;
 			StateHasChanged();
 		}
@@ -43,6 +60,19 @@ namespace SignalRChat.Clients.Blazor.Pages
 			chatClient.MessageReceived += ChatClient_MessageReceived;
 			chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
 			await chatClient.StartAsync();
+		}
+
+		private async Task Send(string clientId)
+		{
+			await chatClient.SendAsync(myChatMessage);
+		}
+
+		protected void ChatWithSpecificClient(string clientIdN)
+		{
+			sendMessageDelegate = async clientId =>
+			{
+				await chatClient.SendAsync(myChatMessage, clientIdN);
+			};
 		}
 	}
 }

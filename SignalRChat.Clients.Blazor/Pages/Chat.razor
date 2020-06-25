@@ -2,7 +2,9 @@
 @inherits ChatBase
 
 <div class="sidebar">
-	<NavMenu />
+	<CascadingValue Value="ClientList">
+		<NavMenu ChatWithSpecificClientCallBack="ChatWithSpecificClient"/>
+	</CascadingValue>
 </div>
 
 <div class="main">
@@ -24,6 +26,6 @@
 		<DxTextBox @bind-Text="@myChatMessage" SizeMode="SizeMode.Medium" NullText="Your Message" />
 		<DxButton Text="Send" RenderStyle="ButtonRenderStyle.Success"
 					 RenderStyleMode="ButtonRenderStyleMode.Contained"
-					 Click="@(async (args) => await HandleSendMessage(args))" />
+					 Click="@(async (args) => await HandleSendMessage())" />
 	</div>
 </div>
