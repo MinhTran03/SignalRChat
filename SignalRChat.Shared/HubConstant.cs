@@ -7,5 +7,6 @@
 		public const string SendMessageMethod = "SendMessage";
 		public const string ReceiveMessageMethod = "ReceiveMessage";
 		public const string NotifyStateMethod = "NotifyState";
+		public const string SendMessageToSpecificClientMethod = "SendMessageToSpecificClient";
 	}
 }

@@ -70,6 +70,13 @@ namespace SignalRChat.Shared
 			await _hubConnection.SendAsync(HubConstant.SendMessageMethod, _clientIdentity, message);
 		}
 
+		public async Task SendAsync(string message, string clientId)
+		{
+			if (_isStarted == false)
+				throw new InvalidOperationException("Client not started");
+			await _hubConnection.SendAsync(HubConstant.SendMessageToSpecificClientMethod, _clientIdentity, message);
+		}
+
 		public async Task StopAsync()
 		{
 			if (_isStarted)
