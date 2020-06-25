@@ -17,9 +17,9 @@ namespace SignalRChat.Server.Hubs
 			await Clients.Others.SendAsync(HubConstant.ReceiveMessageMethod, clientIdentity, message);
 		}
 
-      public async Task SendMessageToSpecificClient(ClientIdentity clientIdentity, string message)
+      public async Task SendMessageToSpecificClient(ClientIdentity clientIdentity, string message, string otherClientId)
       {
-         await Clients.Client(clientIdentity.ClientId)
+         await Clients.Client(otherClientId)
             .SendAsync(HubConstant.ReceiveMessageMethod, clientIdentity, message);
       }
 
