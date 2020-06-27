@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using SignalRChat.Shared;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,32 +11,32 @@ namespace SignalRChat.Clients.Blazor.Pages
 	{
 		protected ChatClient chatClient;
 		protected List<MessageReceivedEventArgs> chatMessages;
-		protected List<ClientIdentity> ClientList;
+		protected List<ClientIdentity> clientList;
+		protected ClientIdentity myIdentity;
 		protected string myChatMessage = string.Empty;
-		protected string username = string.Empty;
-		private delegate Task SendMessageDelegate(string clientId);
-		private SendMessageDelegate sendMessageDelegate;
+		protected string currentOtherClientId = string.Empty;
+		protected bool isChatWithGroup = false;
 
 		protected override void OnInitialized()
 		{
-			ClientList = new List<ClientIdentity>();
-			sendMessageDelegate = Send;
+			clientList = new List<ClientIdentity>();
+			myIdentity = new ClientIdentity();
 		}
 
 		private void ChatClient_NotificationStateChange(object sender, NotifyStateEventArgs e)
 		{
-			chatMessages.Add(new MessageReceivedEventArgs()
+			//chatMessages.Add(new MessageReceivedEventArgs()
+			//{
+			//	ClientIdentity = e.ClientIdentity,
+			//	Message = e.State.ToString()
+			//});
+			if (e.State == State.Register)
 			{
-				ClientIdentity = e.ClientIdentity,
-				Message = e.State.ToString()
-			});
-			if(e.State == State.Register)
-			{
-				ClientList.Add(e.ClientIdentity);
+				clientList.Add(e.ClientIdentity);
 			}
 			else
 			{
-				ClientList.RemoveAll(c => c.ClientId == e.ClientIdentity.ClientId);
+				clientList.RemoveAll(c => c.ClientId == e.ClientIdentity.ClientId);
 			}
 			StateHasChanged();
 		}
@@ -46,33 +47,43 @@ namespace SignalRChat.Clients.Blazor.Pages
 			StateHasChanged();
 		}
 
-		protected async Task HandleSendMessage()
+		protected async Task HandleSendMessage(KeyboardEventArgs arg = null)
 		{
-			await sendMessageDelegate(null);
-			myChatMessage = string.Empty;
-			StateHasChanged();
-		}
-
-		protected async Task RegisUser()
-		{
-			chatMessages = new List<MessageReceivedEventArgs>();
-			chatClient = new ChatClient($"{username}", HubConstant.HubUrl);
-			chatClient.MessageReceived += ChatClient_MessageReceived;
-			chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
-			await chatClient.StartAsync();
-		}
-
-		private async Task Send(string clientId)
-		{
-			await chatClient.SendAsync(myChatMessage);
-		}
-
-		protected void ChatWithSpecificClient(string clientIdN)
-		{
-			sendMessageDelegate = async clientId =>
+			if(arg == null || arg.Code == "Enter")
 			{
-				await chatClient.SendAsync(myChatMessage, clientIdN);
-			};
+				if (!(String.IsNullOrEmpty(currentOtherClientId) && String.IsNullOrEmpty(myChatMessage)))
+				{
+					await chatClient.SendAsync(myChatMessage, currentOtherClientId);
+					chatMessages.Add(new MessageReceivedEventArgs()
+					{
+						ClientIdentity = myIdentity,
+						Message = myChatMessage
+					});
+					myChatMessage = string.Empty;
+					StateHasChanged();
+				}
+			}
+		}
+
+		protected async Task RegisUser(KeyboardEventArgs arg = null)
+		{
+			if (arg == null || arg.Code == "Enter")
+			{
+				if (!String.IsNullOrWhiteSpace(myIdentity.Username))
+				{
+					chatMessages = new List<MessageReceivedEventArgs>();
+					chatClient = new ChatClient($"{myIdentity.Username}", HubConstant.HubUrl);
+					chatClient.MessageReceived += ChatClient_MessageReceived;
+					chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
+					await chatClient.StartAsync();
+					myIdentity.ClientId = chatClient.CLientId;
+				}
+			}
+		}
+
+		protected void ChatWithSpecificClient(string clientId)
+		{
+			currentOtherClientId = clientId;
 		}
 	}
 }

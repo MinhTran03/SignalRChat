@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using SignalRChat.Shared;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SignalRChat.Clients.Blazor.Pages
 {
@@ -10,12 +12,14 @@ namespace SignalRChat.Clients.Blazor.Pages
 		protected string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 		protected void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 
+		[Inject] public IJSRuntime JSRuntime { get; set; }
 		[CascadingParameter] public List<ClientIdentity> ClientList { get; set; }
 		[Parameter] public EventCallback<string> ChatWithSpecificClientCallBack { get; set; }
 
-		protected void HandleOnClickSpecificClient(string clientId)
+		protected async Task HandleOnClickSpecificClient(string clientId)
 		{
-			ChatWithSpecificClientCallBack.InvokeAsync(clientId);
+			await ChatWithSpecificClientCallBack.InvokeAsync(clientId);
+			await JSRuntime.InvokeAsync<string>("activeNavClient", clientId);
 		}
 	}
 }

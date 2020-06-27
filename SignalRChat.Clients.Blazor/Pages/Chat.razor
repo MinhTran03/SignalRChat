@@ -2,30 +2,55 @@
 @inherits ChatBase
 
 <div class="sidebar">
-	<CascadingValue Value="ClientList">
-		<NavMenu ChatWithSpecificClientCallBack="ChatWithSpecificClient"/>
+	<CascadingValue Value="clientList">
+		<NavMenu ChatWithSpecificClientCallBack="ChatWithSpecificClient" />
 	</CascadingValue>
 </div>
 
 <div class="main">
+	<h1>Welcome to your chat app using SignalR.</h1>
 	<div class="content px-4">
-		<h1>Welcome to your chat app using SignalR.</h1>
-		<DxTextBox @bind-Text="@username" SizeMode="SizeMode.Medium" NullText="Enter your name" />
-		<button @onclick="async () => await RegisUser()" class="btn btn-success">Regis</button>
+
+		<div class="input-group mb-3 @(!String.IsNullOrWhiteSpace(myIdentity.ClientId) ? "none" : "")">
+			<input type="text" placeholder="Enter your name" class="form-control"
+					 @bind-value="@myIdentity.Username"
+					 @onkeyup="async (arg) => await RegisUser(arg)"/>
+			<div class="input-group-append">
+				<button type="button" class="btn btn-outline-success"
+						  @onclick="async () => await RegisUser()">
+					Regis
+				</button>
+			</div>
+		</div>
 
 		@if (chatMessages != null)
 		{
 			<ul>
 				@foreach (var chatMessage in chatMessages)
 				{
-					<li>@chatMessage.ClientIdentity.Username: @chatMessage.Message</li>
+					if (chatMessage.ClientIdentity.ClientId != myIdentity.ClientId)
+					{
+						<li>@chatMessage.ClientIdentity.Username: @chatMessage.Message</li>
+					}
+					else
+					{
+						<li>You: @chatMessage.Message</li>
+					}
 				}
 			</ul>
 		}
 
-		<DxTextBox @bind-Text="@myChatMessage" SizeMode="SizeMode.Medium" NullText="Your Message" />
-		<DxButton Text="Send" RenderStyle="ButtonRenderStyle.Success"
-					 RenderStyleMode="ButtonRenderStyleMode.Contained"
-					 Click="@(async (args) => await HandleSendMessage())" />
+		<div class="input-group mb-3">
+			<input type="text" class="form-control" placeholder="Your Message..."
+					 @bind-value="@myChatMessage"
+					 @onkeyup="async (arg) => await HandleSendMessage(arg)">
+			<div class="input-group-append">
+				<button class="btn btn-outline-secondary" type="button"
+						  @onclick="async () => await HandleSendMessage()">
+					Send
+				</button>
+			</div>
+		</div>
+
 	</div>
 </div>

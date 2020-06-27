@@ -1,21 +1,21 @@
 ﻿@inherits NavMenuBase
 
 <div class="top-row pl-4 navbar navbar-dark">
-	<a class="navbar-brand" href="">SignalR Chat</a>
+	<a class="navbar-brand" href="">Online clients</a>
 	<button class="navbar-toggler" @onclick="ToggleNavMenu">
 		<span class="navbar-toggler-icon"></span>
 	</button>
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-	<ul class="nav flex-column">
+	<ul class="list-group">
 		@foreach (var client in ClientList)
 		{
-			<li class="nav-item px-3">
-				<DxButton RenderStyle="@ButtonRenderStyle.Primary"
-							 RenderStyleMode="ButtonRenderStyleMode.Contained"
-							 Text=@client.Username
-							 Click="@((args) => HandleOnClickSpecificClient(client.ClientId))"/>
+			<li class="list-group-item list-group-item-action list-group-item-info rounded-0"
+				 id="@client.ClientId"
+				 style="cursor:pointer"
+				 @onclick="@(async () => await HandleOnClickSpecificClient(client.ClientId))">
+				@client.Username
 			</li>
 		}
 	</ul>
