@@ -13,6 +13,8 @@ namespace SignalRChat.Shared
 		public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 		public event EventHandler<NotifyStateEventArgs> NotificationStateChange;
 
+		public string CLientId { get => _clientIdentity.ClientId; }
+
 		public ChatClient(string username, string siteUrl)
 		{
 			if (string.IsNullOrWhiteSpace(username))
