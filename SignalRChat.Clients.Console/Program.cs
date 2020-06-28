@@ -34,10 +34,11 @@ namespace SignalRChat.Clients.Console
          }
       }
 
-      private static void ChatClient_NotificationAddedToGroup(object sender, GroupIdentity e)
+      private static void ChatClient_NotificationAddedToGroup(object sender, NotifyAddedToGroupEventArgs e)
       {
          ClearCurrentConsoleLine();
-         System.Console.WriteLine("You had added to group [{0}]", e.ToString());
+         System.Console.WriteLine("You had added to group {0} by {1}",
+            e.GroupIdentity.ToString(), e.ClientAdded.ToString());
          System.Console.Write("[You]: ");
       }
 
