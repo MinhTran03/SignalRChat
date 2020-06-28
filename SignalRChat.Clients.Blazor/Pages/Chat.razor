@@ -14,7 +14,7 @@
 		<div class="input-group mb-3 @(!String.IsNullOrWhiteSpace(myIdentity.ClientId) ? "none" : "")">
 			<input type="text" placeholder="Enter your name" class="form-control"
 					 @bind-value="@myIdentity.Username"
-					 @onkeyup="async (arg) => await RegisUser(arg)"/>
+					 @onkeyup="async (arg) => await RegisUser(arg)" />
 			<div class="input-group-append">
 				<button type="button" class="btn btn-outline-success"
 						  @onclick="async () => await RegisUser()">
@@ -23,18 +23,18 @@
 			</div>
 		</div>
 
-		@if (chatMessages != null)
+		@if (chatMessages != null && chatMessages.ContainsKey(currentOtherClientId))
 		{
 			<ul>
-				@foreach (var chatMessage in chatMessages)
+				@foreach (var chatMessage in chatMessages[currentOtherClientId])
 				{
-					if (chatMessage.ClientIdentity.ClientId != myIdentity.ClientId)
+					if (chatMessage.ClientIdentity.ClientId == myIdentity.ClientId)
 					{
-						<li>@chatMessage.ClientIdentity.Username: @chatMessage.Message</li>
+						<li>You: @chatMessage.Message</li>
 					}
 					else
 					{
-						<li>You: @chatMessage.Message</li>
+						<li>@chatMessage.ClientIdentity.Username: @chatMessage.Message</li>
 					}
 				}
 			</ul>

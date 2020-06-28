@@ -10,7 +10,7 @@ namespace SignalRChat.Clients.Blazor.Pages
 	public class ChatBase : ComponentBase
 	{
 		protected ChatClient chatClient;
-		protected List<MessageReceivedEventArgs> chatMessages;
+		protected Dictionary<string, List<MessageReceivedEventArgs>> chatMessages;
 		protected List<ClientIdentity> clientList;
 		protected ClientIdentity myIdentity;
 		protected string myChatMessage = string.Empty;
@@ -25,17 +25,13 @@ namespace SignalRChat.Clients.Blazor.Pages
 
 		private void ChatClient_NotificationStateChange(object sender, NotifyStateEventArgs e)
 		{
-			//chatMessages.Add(new MessageReceivedEventArgs()
-			//{
-			//	ClientIdentity = e.ClientIdentity,
-			//	Message = e.State.ToString()
-			//});
 			if (e.State == State.Register)
 			{
 				clientList.Add(e.ClientIdentity);
 			}
 			else
 			{
+				chatMessages.Remove(e.ClientIdentity.ClientId);
 				clientList.RemoveAll(c => c.ClientId == e.ClientIdentity.ClientId);
 			}
 			StateHasChanged();
@@ -43,7 +39,15 @@ namespace SignalRChat.Clients.Blazor.Pages
 
 		private void ChatClient_MessageReceived(object sender, MessageReceivedEventArgs e)
 		{
-			chatMessages.Add(e);
+			if (chatMessages.ContainsKey(e.ClientIdentity.ClientId))
+			{
+				chatMessages[e.ClientIdentity.ClientId].Add(e);
+			}
+			else
+			{
+				chatMessages.Add(e.ClientIdentity.ClientId,
+					new List<MessageReceivedEventArgs>() { e });
+			}
 			StateHasChanged();
 		}
 
@@ -54,11 +58,20 @@ namespace SignalRChat.Clients.Blazor.Pages
 				if (!(String.IsNullOrEmpty(currentOtherClientId) && String.IsNullOrEmpty(myChatMessage)))
 				{
 					await chatClient.SendAsync(myChatMessage, currentOtherClientId);
-					chatMessages.Add(new MessageReceivedEventArgs()
+					var messageSendArg = new MessageReceivedEventArgs()
 					{
 						ClientIdentity = myIdentity,
 						Message = myChatMessage
-					});
+					};
+					if (chatMessages.ContainsKey(currentOtherClientId))
+					{
+						chatMessages[currentOtherClientId].Add(messageSendArg);
+					}
+					else
+					{
+						chatMessages.Add(currentOtherClientId,
+							new List<MessageReceivedEventArgs>() { messageSendArg });
+					}
 					myChatMessage = string.Empty;
 					StateHasChanged();
 				}
@@ -71,7 +84,7 @@ namespace SignalRChat.Clients.Blazor.Pages
 			{
 				if (!String.IsNullOrWhiteSpace(myIdentity.Username))
 				{
-					chatMessages = new List<MessageReceivedEventArgs>();
+					chatMessages = new Dictionary<string, List<MessageReceivedEventArgs>>();
 					chatClient = new ChatClient($"{myIdentity.Username}", HubConstant.HubUrl);
 					chatClient.MessageReceived += ChatClient_MessageReceived;
 					chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
