@@ -8,7 +8,8 @@ namespace SignalRChat.Clients.Blazor.Components
 	public class ManySelectListPopupBase : ComponentBase
 	{
 		[Parameter] public List<ClientIdentity> ClientList { get; set; }
-		[Parameter] public EventCallback<List<string>> OnCreateCallback { get; set; }
+		[Parameter] public EventCallback<Dictionary<string, List<string>>> OnCreateCallback { get; set; }
+		protected string GroupName { get; set; } = string.Empty;
 		protected List<string> SelectedClientIdList { get; set; } = new List<string>();
 
 		protected void HandleCheckboxClicked(string checkedClientId, object checkedValue)
@@ -25,7 +26,11 @@ namespace SignalRChat.Clients.Blazor.Components
 
 		protected async Task HandleCreate()
 		{
-			await OnCreateCallback.InvokeAsync(SelectedClientIdList);
+			await OnCreateCallback.InvokeAsync(new Dictionary<string, List<string>>()
+			{
+				{ GroupName, SelectedClientIdList }
+			});
+			SelectedClientIdList.Clear();
 		}
 	}
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using SignalRChat.Shared;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SignalRChat.Clients.Blazor.Pages
@@ -117,10 +118,11 @@ namespace SignalRChat.Clients.Blazor.Pages
 			currentRequestId = groupId;
 		}
 
-		protected async Task HandleCreateGroup(List<string> clientIdList)
+		protected async Task HandleCreateGroup(Dictionary<string, List<string>> args)
 		{
-			clientIdList.Add(myIdentity.ClientId);
-			await chatClient.CreateGroup("Demo", clientIdList);
+			string groupName = args.Keys.ToList()[0];
+			args[groupName].Add(myIdentity.ClientId);
+			await chatClient.CreateGroup(groupName, args[groupName]);
 		}
 	}
 }
