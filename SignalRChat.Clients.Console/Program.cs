@@ -15,6 +15,7 @@ namespace SignalRChat.Clients.Console
             var chatClient = new ChatClient(username, HubConstant.HubUrl);
             chatClient.MessageReceived += ChatClient_MessageReceived;
             chatClient.NotificationStateChange += ChatClient_NotificationStateChange;
+            chatClient.NotificationAddedToGroup += ChatClient_NotificationAddedToGroup;
             await chatClient.StartAsync();
 
             System.Console.WriteLine("Connect success. Start to chat\nTo exit press \'exit\'");
@@ -31,6 +32,13 @@ namespace SignalRChat.Clients.Console
          {
             System.Console.WriteLine("Error: {0}", e.Message);
          }
+      }
+
+      private static void ChatClient_NotificationAddedToGroup(object sender, GroupIdentity e)
+      {
+         ClearCurrentConsoleLine();
+         System.Console.WriteLine("You had added to group [{0}]", e.ToString());
+         System.Console.Write("[You]: ");
       }
 
       private static void ChatClient_NotificationStateChange(object sender, NotifyStateEventArgs e)
