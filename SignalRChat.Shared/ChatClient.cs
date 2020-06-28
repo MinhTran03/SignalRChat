@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SignalRChat.Shared
@@ -12,6 +14,7 @@ namespace SignalRChat.Shared
 		private bool _isStarted;
 		public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 		public event EventHandler<NotifyStateEventArgs> NotificationStateChange;
+		public event EventHandler<NotifyAddedToGroupEventArgs> NotificationAddedToGroup;
 
 		public string CLientId { get => _clientIdentity.ClientId; }
 
@@ -38,6 +41,8 @@ namespace SignalRChat.Shared
 					(clientIdentity, message) => HandlerReceiveMessage(clientIdentity, message));
 				_hubConnection.On<ClientIdentity, State>(HubConstant.NotifyStateMethod,
 					(clientIdentity, state) => HandlerNotifyOtherClientStateChange(clientIdentity, state));
+				_hubConnection.On<GroupIdentity, ClientIdentity>(HubConstant.NotifyAddedToGroupMethod,
+					(groupIdentity, clientIdentity) => HandlerNotifyAddedToGroup(groupIdentity, clientIdentity));
 
 				await _hubConnection.StartAsync();
 				_clientIdentity.ClientId = _hubConnection.ConnectionId;
@@ -65,11 +70,20 @@ namespace SignalRChat.Shared
 			});
 		}
 
+		private void HandlerNotifyAddedToGroup(GroupIdentity groupIdentity, ClientIdentity clientIdentity)
+		{
+			NotificationAddedToGroup?.Invoke(this, new NotifyAddedToGroupEventArgs()
+			{
+				ClientAdded = clientIdentity,
+				GroupIdentity = groupIdentity
+			});
+		}
+
 		public async Task SendAsync(string message)
 		{
 			if (_isStarted == false)
 				throw new InvalidOperationException("Client not started");
-			await _hubConnection.SendAsync(HubConstant.SendMessageMethod, _clientIdentity, message);
+			await _hubConnection.SendAsync(HubConstant.SendMessageToAllMethod, _clientIdentity, message);
 		}
 
 		public async Task SendAsync(string message, string otherClientId)
@@ -78,6 +92,28 @@ namespace SignalRChat.Shared
 				throw new InvalidOperationException("Client not started");
 			await _hubConnection.SendAsync(HubConstant.SendMessageToSpecificClientMethod,
 				_clientIdentity, message, otherClientId);
+		}
+
+		public async Task SendToGroupAsync(string message, string groupId)
+		{
+			if (_isStarted == false)
+				throw new InvalidOperationException("Client not started");
+			await _hubConnection.SendAsync(HubConstant.SendMessageToGroupMethod,
+				_clientIdentity, message, groupId);
+		}
+
+		/// <summary>
+		/// Create Group method
+		/// </summary>
+		/// <param name="groupName"></param>
+		/// <param name="memberIdList">Include caller</param>
+		/// <returns></returns>
+		public async Task CreateGroup(string groupName, IEnumerable<string> memberIdList)
+		{
+			if (_isStarted == false)
+				throw new InvalidOperationException("Client not started");
+			await _hubConnection.SendAsync(HubConstant.CreateGroupMethod,
+				_clientIdentity, groupName, memberIdList);
 		}
 
 		public async Task StopAsync()
