@@ -18,5 +18,14 @@
 				@client.Username
 			</li>
 		}
+		@foreach (var group in GroupList)
+		{
+			<li class="list-group-item list-group-item-action list-group-item-info rounded-0"
+				 id="@group.GroupId"
+				 style="cursor:pointer"
+				 @onclick="@(async () => await HandleOnClickSpecificGroup(group.GroupId))">
+				@group.GroupName
+			</li>
+		}
 	</ul>
 </div>

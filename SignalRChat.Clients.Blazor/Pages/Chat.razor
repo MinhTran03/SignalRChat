@@ -3,7 +3,10 @@
 
 <div class="sidebar">
 	<CascadingValue Value="clientList">
-		<NavMenu ChatWithSpecificClientCallBack="ChatWithSpecificClient" />
+		<CascadingValue Value="groupList">
+			<NavMenu ChatWithSpecificClientCallBack="ChatWithSpecificClient"
+						ChatWithSpecificGroupCallBack="ChatWithSpecificGroup" />
+		</CascadingValue>
 	</CascadingValue>
 </div>
 
@@ -23,10 +26,10 @@
 			</div>
 		</div>
 
-		@if (chatMessages != null && chatMessages.ContainsKey(currentOtherClientId))
+		@if (chatMessages != null && chatMessages.ContainsKey(currentRequestId))
 		{
 			<ul>
-				@foreach (var chatMessage in chatMessages[currentOtherClientId])
+				@foreach (var chatMessage in chatMessages[currentRequestId])
 				{
 					if (chatMessage.ClientIdentity.ClientId == myIdentity.ClientId)
 					{
@@ -52,5 +55,7 @@
 			</div>
 		</div>
 
+		<ManySelectListPopup ClientList="clientList"
+									OnCreateCallback="async (clientList) => await HandleCreateGroup(clientList)" />
 	</div>
 </div>

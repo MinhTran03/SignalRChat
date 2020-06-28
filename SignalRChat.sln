@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalRChat.Clients.Console
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalRChat.Shared", "SignalRChat.Shared\SignalRChat.Shared.csproj", "{E376E787-3A00-4CE7-9A00-843C96AC8256}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRChat.Clients.Blazor", "SignalRChat.Clients.Blazor\SignalRChat.Clients.Blazor.csproj", "{40A19108-71C2-4A96-AAE0-5CD03D139018}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalRChat.Clients.Blazor", "SignalRChat.Clients.Blazor\SignalRChat.Clients.Blazor.csproj", "{40A19108-71C2-4A96-AAE0-5CD03D139018}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
